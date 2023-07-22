@@ -165,7 +165,7 @@ const sendTokenInfo = async (context: any, data: any) => {
 			let owner = token.owner;
 			console.log("owner", owner)
 			await sendImage(context,image,imageName);
-			await context.reply(`Owned by ${JSON.stringify(owner)}`);
+			await context.reply(`Owned by address: ${owner.identity}, hasXMTP: ${owner.xmtp ? "true" : "false"}`);
 		}
 	}
 	if (polToken) {
@@ -180,7 +180,7 @@ const sendTokenInfo = async (context: any, data: any) => {
 			let owner = token.owner;
 			console.log("owner", owner)
 			await sendImage(context,image,imageName);
-			await context.reply(`Owned by ${JSON.stringify(owner)}`);
+			await context.reply(`Owned by address: ${owner.identity}, hasXMTP: ${owner.xmtp ? "true" : "false"}`);
 		}
 	}
 
