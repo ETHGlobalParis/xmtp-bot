@@ -44,12 +44,5 @@ The Chat Bot will then return a list of NFTs that match the search criteria, alo
 
 Users can reach out to NFT owners over XMTP protocol to inquire about specific NFTs.
 
-# Dependencies
-The Chat Bot script relies on the following dependencies:
-
-node-xmpp-client: To handle the XMPP client connections and message exchanges.
-natural: For natural language processing and smart language prompting.
-nft-library: A custom library for querying NFT collections and data.
-
 # Conclusion
 The Chat Bot with XMTP Protocol for smart language prompting on NFT collection search is a powerful tool that enables users to search and discover NFTs in a user-friendly and efficient manner. By leveraging XMTP protocol, it facilitates seamless communication between users and NFT owners, enhancing the overall NFT collection exploration experience. The Chat Bot can be easily integrated into various XMPP clients and applications to provide a comprehensive NFT discovery service.
