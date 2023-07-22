@@ -1,0 +1,1 @@
+{"version":2,"languages":{"nodejs-npm":{"specfileHash":"22dced59241029659ade9f96dce69278","lockfileHash":"9f1f7ed92eb27020b9077f7832d09461","guessedImports":["@xmtp/xmtp-js","@xmtp/bot-starter","ethers","qrcode-terminal"],"guessedImportsHash":"cebcea1fa0d18d56fe35932f3d06acb5"}}}
