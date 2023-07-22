@@ -5,8 +5,8 @@ import run from '@xmtp/bot-starter'
 import qrcode from 'qrcode-terminal'
 import { dispatch } from './fsm.js';
 import HandlerContext from '@xmtp/bot-starter/dist/HandlerContext.js';
+import 'dotenv/config'
 
-process.env.KEY = "464faef01d67d4124510cfb32aae7950899478208b90f56f2aae3da5806b9a5d"
 
 
 

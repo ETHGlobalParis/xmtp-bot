@@ -6,15 +6,15 @@ import { Wallet } from 'ethers'
 import Upload from './uploadFile.js';
 import axios from 'axios'
 import HandlerContext from "@xmtp/bot-starter/dist/HandlerContext.js";
+import 'dotenv/config'
 
-const wallet = new Wallet("464faef01d67d4124510cfb32aae7950899478208b90f56f2aae3da5806b9a5d");
+const wallet = new Wallet(process.env.KEY || "");
 
 const client = await Client.create(wallet, { env: 'production' })
 client.registerCodec(new AttachmentCodec())
 client.registerCodec(new RemoteAttachmentCodec())
 
-export const sendTokenInfo = async (context: any, data: any) => {
-	const sendImage = async (context : HandlerContext, imageUrl : any, imageName : string) => {
+export const sendImage = async (context : HandlerContext, imageUrl : string) => {
 		try {
 		const convo = await client.conversations.newConversation(context.message.senderAddress)
 
@@ -24,6 +24,7 @@ export const sendTokenInfo = async (context: any, data: any) => {
 
 		// Get the image buffer
 		const imageBuffer = Buffer.from(response.data, 'binary');
+		const imageName = imageUrl.split("/").pop() || "";
 		const imageExt = imageName.split('.').pop() || "*/*";
     const attachment = {
       filename: imageName,
@@ -60,18 +61,19 @@ export const sendTokenInfo = async (context: any, data: any) => {
 		await convo.send(remoteAttachment, { contentType: ContentTypeRemoteAttachment })
 		} catch (e) { console.error (e)}
 	}
-	const ethToken = data.ethereum.TokenBalance;
-	const polToken = data.polygon.TokenBalance;
+export const sendTokenInfo = async (context: any, data: any) => {
+	//filter out tokens whose user has no XMTP
+	const ethToken = data.ethereum.TokenBalance.filter((token : any) => token.owner.xmtp && token.owner.xmtp.isXMTPEnabled);
+	const polToken = data.polygon.TokenBalance.filter((token : any) => token.owner.xmtp && token.owner.xmtp.isXMTPEnabled);
 	if (ethToken) {
 		await context.reply(`Here are the top token found on Ethereum:`);
 		for (const id in ethToken) {
 			const token = ethToken[id]
 			let image = token.tokenNfts.contentValue.image.original;
-			const imageName = image.split("/").pop()
 			console.log("image", image)
 			let owner = token.owner;
 			console.log("owner", owner)
-			await sendImage(context,image,imageName);
+			await sendImage(context,image);
 			await context.reply(`Owned by address: ${owner.identity}, hasXMTP: ${owner.xmtp ? "true" : "false"}`);
 		}
 	}
@@ -82,11 +84,10 @@ export const sendTokenInfo = async (context: any, data: any) => {
 		for (const id in polToken) {
 			const token = polToken[id]
 			let image: string = token.tokenNfts.contentValue.image.original;
-			const imageName = image.split("/").pop() || ""
 			console.log("image", image)
 			let owner = token.owner;
 			console.log("owner", owner)
-			await sendImage(context,image,imageName);
+			await sendImage(context,image);
 			await context.reply(`Owned by address: ${owner.identity}, hasXMTP: ${owner.xmtp ? "true" : "false"}`);
 		}
 	}

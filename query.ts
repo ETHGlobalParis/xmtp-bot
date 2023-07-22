@@ -1,6 +1,7 @@
 import { gql } from "graphql-request";
 import { request} from 'graphql-request'
 
+// Query to get the holders of tokens in a collection
 export const GetTokenHolders = gql`
 query GetTokenHolders($tokenAddress: Address, $limit: Int) {
   ethereum: TokenBalances(
@@ -120,7 +121,7 @@ query GetTokenHolders($tokenAddress: Address, $limit: Int) {
 }`;
 
 export const GetTokenHoldersByTokenAddress = async (tokenAddress: string) =>  {
-  const data = await request('https://api.airstack.xyz/gql', GetTokenHolders, { tokenAddress: tokenAddress, limit: 2, headers: {
+  const data = await request('https://api.airstack.xyz/gql', GetTokenHolders, { tokenAddress: tokenAddress, limit: 100, headers: {
     authorization: `Bearer MY_TOKEN`,
   }})
 
@@ -128,6 +129,7 @@ export const GetTokenHoldersByTokenAddress = async (tokenAddress: string) =>  {
 
 }
 
+// Query to check the existence of a collection
 export const MentionsQuery = `
   query SearchAIMentions($input: SearchAIMentionsInput!) {
     SearchAIMentions(input: $input) {
@@ -205,4 +207,62 @@ export const checkCollectionExists = async (collectionName : string) => {
 		} else {
 			return [false, null, null];
 		}
+};
+
+// Query to check that a POAP event exists
+export const GetPOAPEventExists = gql`
+query CheckPoapEventExistence ($eventName: String!)) {
+  PoapEvents(input: {filter: {eventName: {_eq: $eventName}}, blockchain: ALL}) {
+    PoapEvent {
+      id
+    }
+  }
+}`;
+
+export const checkPoapEventExistence = async (eventName : string) => {
+  const data : any = await request('https://api.airstack.xyz/gql', GetPOAPEventExists, { eventName, headers: {
+    Authorization : process.env.AIRSTACK_TOKEN || "",
+  }})
+  return data.PoapEvents.PoapEvent != null;
+
+};
+
+// Query to get info about a POAP event
+export const GetPOAPEvent = gql`
+query MyQuery ($eventName: String!) {
+  PoapEvents(
+    input: {filter: {eventName: {_eq: $eventName}}, blockchain: ALL}
+  ) {
+    PoapEvent {
+      eventName
+      eventId
+      startDate
+      endDate
+      country
+      city
+      isVirtualEvent
+      contentValue {
+        image {
+          extraSmall
+          large
+          medium
+          original
+          small
+        }
+      }
+      poaps {
+        owner {
+          addresses
+        }
+      }
+    }
+  }
+}`;
+
+export const getPoapEventInfo = async (eventName : string) => {
+  const data : any = await request('https://api.airstack.xyz/gql', GetPOAPEvent, { eventName, headers: {
+    authorization: `Bearer MY_TOKEN`,
+  }})
+  return data;
+
 };
