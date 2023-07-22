@@ -105,11 +105,21 @@ client.registerCodec(new AttachmentCodec())
 client.registerCodec(new RemoteAttachmentCodec())
 
 const sendTokenInfo = async (context: any, data: any) => {
-  const createAttachment = async (data: Uint8Array) => {
+	const sendImage = async (context : HandlerContext, imageUrl : any, imageName : string) => {
+		try {
+		const convo = await client.conversations.newConversation(context.message.senderAddress)
+
+		// replace imageUrl with the url of your image
+		const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+		console.log('response', response)
+
+		// Get the image buffer
+		const imageBuffer = Buffer.from(response.data, 'binary');
+		const imageExt = imageName.split('.').pop() || "*/*";
     const attachment = {
-      filename: 'testFile12345.jpg',
-      mimeType: 'image/jpeg',
-      data,
+      filename: imageName,
+      mimeType: imageExt,
+      data : imageBuffer,
     }
 
     const encryptedEncoded = await RemoteAttachmentCodec.encodeEncrypted(attachment, new AttachmentCodec())
@@ -138,22 +148,6 @@ const sendTokenInfo = async (context: any, data: any) => {
       contentLength: attachment.data.byteLength,
     };
 
-    return remoteAttachment
-  }
-
-	const sendImage = async (context : HandlerContext, image : any) => {
-		try {
-		const convo = await client.conversations.newConversation(context.message.senderAddress)
-
-		// replace imageUrl with the url of your image
-		const imageUrl = image
-		const response = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-		console.log('response', response)
-
-		// Get the image buffer
-		const imageBuffer = Buffer.from(response.data, 'binary');
-		const remoteAttachment = await createAttachment(imageBuffer)
-
 		await convo.send(remoteAttachment, { contentType: ContentTypeRemoteAttachment })
 		} catch (e) { console.error (e)}
 	}
@@ -164,10 +158,11 @@ const sendTokenInfo = async (context: any, data: any) => {
 		for (const id in ethToken) {
 			const token = ethToken[id]
 			let image = token.tokenNfts.contentValue.image.original;
+			const imageName = image.split("/").pop()
 			console.log("image", image)
 			let owner = token.owner;
 			console.log("owner", owner)
-			await sendImage(context,image);
+			await sendImage(context,image,imageName);
 			await context.reply(`Owned by ${JSON.stringify(owner)}`);
 		}
 	}
@@ -177,11 +172,12 @@ const sendTokenInfo = async (context: any, data: any) => {
 		console.dir(polToken)
 		for (const id in polToken) {
 			const token = polToken[id]
-			let image = token.tokenNfts.contentValue.image.original;
+			let image: string = token.tokenNfts.contentValue.image.original;
+			const imageName = image.split("/").pop() || ""
 			console.log("image", image)
 			let owner = token.owner;
 			console.log("owner", owner)
-			await sendImage(context,image);
+			await sendImage(context,image,imageName);
 			await context.reply(`Owned by ${JSON.stringify(owner)}`);
 		}
 	}
