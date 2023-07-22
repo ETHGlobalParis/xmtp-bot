@@ -15,6 +15,7 @@ enum Events { userLogin = 0, sendNFT, sendCollectionName, wrongInput, backToTop,
 		t(States.waitingForNFT,	Events.backToTop,  States.waitingForNFT),
 		t(States.waitingForCollectionName,   Events.retry,  States.waitingForCollectionName),
 		t(States.waitingForCollectionName,   Events.sendCollectionName,  States.fetchingCollection),
+		t(States.waitingForCollectionName,	Events.backToTop,  States.waitingForUser),
 	];
 
 	const fsm = new StateMachine<States, Events>(
@@ -66,6 +67,7 @@ enum Events { userLogin = 0, sendNFT, sendCollectionName, wrongInput, backToTop,
 						const data = await GetTokenHoldersByTokenAddress(error);
 						console.log("data", data)
 						await sendTokenInfo(context, data);
+						await context.reply(`Going to sleep now. Send me a message to wake me up!`);
 						fsm.dispatch (Events.backToTop);
 					} else {
 						if (error) {
