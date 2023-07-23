@@ -63,8 +63,8 @@ export const sendImage = async (context : HandlerContext, imageUrl : string) => 
 	}
 export const sendTokenInfo = async (context: any, data: any) => {
 	//filter out tokens whose user has no XMTP
-	const ethToken = data.ethereum.TokenBalance.filter((token : any) => token.owner.xmtp && token.owner.xmtp.isXMTPEnabled);
-	const polToken = data.polygon.TokenBalance.filter((token : any) => token.owner.xmtp && token.owner.xmtp.isXMTPEnabled);
+	const ethToken = data.ethereum.TokenBalance
+	const polToken = data.polygon.TokenBalance
 	if (ethToken) {
 		await context.reply(`Here are the top token found on Ethereum:`);
 		for (const id in ethToken) {
